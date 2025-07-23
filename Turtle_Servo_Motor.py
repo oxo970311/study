@@ -22,7 +22,7 @@ try:
             if int_angle == 180:
                 if not last_was_180:
                     step += 1
-                    t.forward(100)
+                    t.forward(50)
                     print("거북이 %d 발짜국 전진" % step)
                     last_was_180 = True
                     if step == 3:

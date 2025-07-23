@@ -4,6 +4,7 @@ import random
 import math
 import time
 
+# 버튼을 안누르면 전진, 누르고 있으면 멈춤
 t = turtle.Turtle()
 t.shape('turtle')
 
@@ -25,7 +26,7 @@ try:
                     t.forward(50)
                     print("거북이 %d 발짜국 전진" % step)
                     last_was_180 = True
-                    if step == 3:
+                    if step == 5:
                         break
 
             else:

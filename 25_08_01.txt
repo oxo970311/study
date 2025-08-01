@@ -1,0 +1,86 @@
+📄 ArUco Marker 정리
+
+# 📌 ArUco Marker 개요 및 사용법 정리
+
+ArUco Marker는 OpenCV에서 제공하는 **이진 사각형 마커(Binary Square Fiducial Marker)**로,  
+컴퓨터 비전 기반의 **위치 인식**, **로봇 내비게이션**, **카메라 캘리브레이션** 등에 자주 사용됩니다.
+
+---
+
+## 🔶 1. ArUco Marker란?
+
+- OpenCV 기반의 마커 인식 시스템
+- 각 마커는 고유한 ID를 가짐
+- **비전 기반 pose estimation**에 활용 (위치 + 자세 인식)
+- QR코드와 비슷하지만 더 단순한 형태
+
+---
+
+## 🧩 2. ArUco Dictionary 종류
+
+| Dictionary 이름 | 총 마커 수 | 마커 크기 (비트 수) |
+|-----------------|------------|----------------------|
+| `DICT_4X4_50`   | 50         | 4 x 4                |
+| `DICT_5X5_100`  | 100        | 5 x 5                |
+| `DICT_6X6_250`  | 250        | 6 x 6                |
+| `DICT_7X7_1000` | 1000       | 7 x 7                |
+
+> ✅ 작은 마커: 연산이 빠름 / ❌ ID 수 적음  
+> ✅ 큰 마커: 정교한 추적 / ❌ 연산량 증가
+
+---
+
+## 🧪 3. 마커 생성하기 (Python)
+
+```python
+import cv2
+import cv2.aruco as aruco
+
+aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_5X5_100)
+img = aruco.drawMarker(aruco_dict, id=23, sidePixels=200)
+
+cv2.imwrite("aruco_23.png", img)
+
+
+
+
+🎯 마커 감지하기
+
+cap = cv2.VideoCapture(0)
+aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_5X5_100)
+parameters = aruco.DetectorParameters()
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    corners, ids, _ = aruco.detectMarkers(frame, aruco_dict, parameters=parameters)
+
+    if ids is not None:
+        aruco.drawDetectedMarkers(frame, corners, ids)
+
+    cv2.imshow("ArUco Detection", frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+
+
+
+
+📏 카메라 자세(Pose) 추정
+
+rvecs, tvecs, _ = aruco.estimatePoseSingleMarkers(
+    corners, markerLength=0.05, cameraMatrix=camera_matrix, distCoeffs=dist_coeffs)
+
+for rvec, tvec in zip(rvecs, tvecs):
+    aruco.drawAxis(frame, camera_matrix, dist_coeffs, rvec, tvec, 0.03)
+
+
+
+
+📦 필수 설치 패키지
+
+pip install opencv-python opencv-contrib-python
